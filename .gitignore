@@ -1,0 +1,13 @@
+# Presets, preset-derived data and trained models are never committed.
+data/
+runs/
+out/
+*.zip
+*.npy
+*.npz
+*.pt
+*.pth
+*.pkl
+*.csv
+__pycache__/
+*.pyc
