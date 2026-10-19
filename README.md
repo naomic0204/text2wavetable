@@ -1,6 +1,6 @@
 # text2wavetable
 
-Code for **"Text-Conditioned Wavetable Generation for a Software Synthesizer with a Conditional Variational Autoencoder"**
+Code for **"Text-Conditioned Wavetable Generation for Software Synthesizer with Conditional Variational Autoencoder"**
 (anonymous submission).
 
 From a short text description, the method generates several wavetables that can be loaded into the oscillator of the
@@ -28,15 +28,23 @@ To train the models, collect Vital presets yourself (see [Data](#data)).
    stay at their initial values, so the user can keep editing the sound with the synthesizer's own controls.
 
 Baselines trained on the same data, split and α targets:
-- **Map&Steal**: returns the α of the training preset whose prompt is nearest in SBERT space.
-- **HybridNet**: an MLP that regresses synthesizer parameters, α and modulation slots from the text.
+- **NNS** (nearest neighbor search): returns the α of the training preset whose prompt is nearest in SBERT space.
+- **MLP** (multilayer perceptron): regresses synthesizer parameters, α and modulation slots from the text
+  (hidden size 1,024, two residual blocks).
+
+**Naming.** The paper calls the baselines NNS and MLP. In the code they keep their earlier names:
+
+| Paper | Code |
+|---|---|
+| NNS | `Map&Steal` (in `scripts/evaluate.py`) |
+| MLP | `VitalHybridNet` / `HybridNet` (`t2w/models.py`, `scripts/train_hybridnet.py`, `hybridnet*` files) |
 
 ## Repository layout
 
 ```
 t2w/                   library code
   vital_io.py          read/write .vital presets (wavetable, prompt, parameters, modulations)
-  models.py            dictionary VAE, DWTS-CVAE, HybridNet
+  models.py            dictionary VAE, DWTS-CVAE, MLP baseline (VitalHybridNet)
   audio.py             test-tone synthesis, CLAP-S / CLAP-I scorers, FAD
   data.py              processed-dataset loader, SBERT encoding
   vital_render.py      load a preset into the Vital VST3 with pedalboard and render a note
@@ -46,8 +54,8 @@ scripts/
   fit_alpha.py         NNLS mixing weights (alpha.npy)
   encode_text.py       SBERT embeddings (optional; useful with separate environments)
   train_cvae.py        DWTS-CVAE (cvae.pt)
-  train_hybridnet.py   HybridNet baseline (hybridnet.pt)
-  evaluate.py          CLAP-S, CLAP-I and FAD of Map&Steal, HybridNet and the CVAE
+  train_hybridnet.py   MLP baseline (hybridnet.pt)
+  evaluate.py          CLAP-S, CLAP-I and FAD of NNS, MLP and the CVAE
   generate_vital.py    text -> .vital (and optionally a rendered .wav)
 templates/vital_init.vital   Vital 1.5.5 initial patch (the template for generated presets)
 examples/              the 8 evaluation prompts, the example figure, and generated .vital / .wav files
@@ -69,7 +77,7 @@ examples/              the 8 evaluation prompts, the example figure, and generat
 - Training takes a few minutes on one consumer GPU:
   - dictionary: about 1 minute
   - CVAE: about 2 minutes
-  - HybridNet: about 6 minutes
+  - MLP baseline: about 6 minutes
 - Evaluation runs on a CPU.
 - Rendering `.wav` files needs Vital 1.5.5 (VST3), installed separately.
 
@@ -126,11 +134,11 @@ python scripts/generate_vital.py "warm pad with long attack and smooth release" 
 
 | File | Content |
 |---|---|
-| `fig_examples.pdf` / `.png` | One cycle of the selected CVAE wavetable (black; the other 4 candidates in grey) and the Map&Steal and HybridNet outputs. Each panel shows its CLAP-I score |
-| `vital/cvae_<i>.vital`, `vital/hybridnet_<i>.vital` | Vital's initial patch with the OSC1 wavetable replaced by the generated cycle |
-| `wav/cvae_<i>.wav`, `wav/hybridnet_<i>.wav` | The presets rendered with Vital 1.5.5: C4, 2 s, 44.1 kHz, stereo, float32, not normalized |
+| `fig_examples.pdf` / `.png` | One cycle of the selected CVAE wavetable (black; the other 4 candidates in grey) and the NNS and MLP outputs. Each panel shows its CLAP-I score |
+| `vital/cvae_<i>.vital`, `vital/hybridnet_<i>.vital` (MLP) | Vital's initial patch with the OSC1 wavetable replaced by the generated cycle |
+| `wav/cvae_<i>.wav`, `wav/hybridnet_<i>.wav` (MLP) | The presets rendered with Vital 1.5.5: C4, 2 s, 44.1 kHz, stereo, float32, not normalized |
 
-Map&Steal presets and audio are not included, because they reproduce waveforms of real presets from the training data.
+NNS presets and audio are not included, because they reproduce waveforms of real presets from the training data.
 
 ## Limitations
 

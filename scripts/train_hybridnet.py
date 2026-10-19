@@ -1,4 +1,4 @@
-"""Train the HybridNet baseline: SBERT text -> MLP (hidden 1024, 2 residual blocks) with three heads:
+"""Train the HybridNet baseline (called MLP in the paper): SBERT text -> MLP (hidden 1024, 2 residual blocks) with three heads:
 synth parameters (min-max scaled, MSE), alpha over K prototypes (MSE to the NNLS alpha), and 8 modulation slots
 (source / destination classification with label smoothing 0.1 + amount regression).
 Loss weights: parameters 1.0, alpha 0.3, modulations 0.05. Adam 1e-3 (weight decay 1e-4), cosine annealing, 500 epochs,

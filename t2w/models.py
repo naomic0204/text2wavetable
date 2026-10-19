@@ -1,4 +1,4 @@
-"""Models: prototype dictionary (VAE), DWTS-CVAE, and the HybridNet baseline."""
+"""Models: prototype dictionary (VAE), DWTS-CVAE, and the HybridNet baseline (called MLP in the paper)."""
 import numpy as np
 import torch
 import torch.nn as nn

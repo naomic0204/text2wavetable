@@ -1,4 +1,4 @@
-"""Evaluate Map&Steal, HybridNet and DWTS-CVAE on a list of prompts (wavetable only).
+"""Evaluate Map&Steal (NNS in the paper), HybridNet (MLP in the paper) and DWTS-CVAE on a list of prompts (wavetable only).
 
 Synthesis: wave = alpha @ P (P = row-normalized prototypes) scaled to max |value| = 1, played by a wavetable oscillator at
 440 Hz for 3 s at 48 kHz, zero-padded to 4 s.
